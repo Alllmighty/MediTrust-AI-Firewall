@@ -30,7 +30,6 @@ jobs:
       run: |
         echo "# 🛡️ MediTrust AI Firewall / LLM OBSERVABILITY REPORT (10x CI/CD Global Summary)" >> global_report.md
         echo "Generated: $(date)" >> global_report.md
-        echo " :---  :--- " >> global_report.md
         
         FAILED=0
         
@@ -40,10 +39,10 @@ jobs:
           
           if python tests/test_runner.py; then
             echo "::endgroup::"
-            echo " Iteration #$i  Run status: ✅ SUCCESS " >> global_report.md
+            echo " Iteration #$i.  Run status: ✅ SUCCESS " >> global_report.md
           else
             echo "::endgroup::"
-            echo " Iteration #$i  Run status: ❌ FLAKY " >> global_report.md
+            echo " Iteration #$i.  Run status: ❌ FLAKY " >> global_report.md
             FAILED=1
           fi
         
