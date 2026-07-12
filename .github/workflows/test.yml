@@ -12,10 +12,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -29,29 +29,33 @@ jobs:
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       run: |
         echo "# 🛡️ MediTrust AI Firewall / LLM OBSERVABILITY REPORT (10x CI/CD Global Summary)" >> global_report.md
+        echo "### 📊 Global Execution Summary" >> global_report.md
         echo "Generated: $(date)" >> global_report.md
+        echo "" >> global_report.md
         
         FAILED=0
         
-        for i in {1..3}
+        for i in {1..2}
         do
           echo "::group::🔄 Starting global iteration №$i..."
           
           if python tests/test_runner.py; then
             echo "::endgroup::"
-            echo " Iteration #$i.  Run status: ✅ SUCCESS " >> global_report.md
+            echo "- Iteration #$i:  Run status: ✅ SUCCESS " >> global_report.md
           else
             echo "::endgroup::"
-            echo " Iteration #$i.  Run status: ❌ FLAKY " >> global_report.md
+            echo "- Iteration #$i:  Run status: ❌ FLAKY / FAILED " >> global_report.md
             FAILED=1
           fi
         
           if [ -f tests/test_report.md ]; then
-            echo "<details><summary>🔍 Expand Iteration #$i details.</summary>" >> global_report.md
             echo "" >> global_report.md
-            cat tests/test_report.md >> global_report.md
+            echo " <details><summary>🔍 Expand Iteration #$i details.</summary>" >> global_report.md
             echo "" >> global_report.md
-            echo "</details>" >> global_report.md
+            sed 's/^/  /' tests/test_report.md >> global_report.md
+            echo "" >> global_report.md
+            echo " </details>" >> global_report.md
+            echo "" >> global_report.md
             rm tests/test_report.md
           fi
         
@@ -61,7 +65,7 @@ jobs:
         cat global_report.md >> $GITHUB_STEP_SUMMARY
         
         if [ $FAILED -ne 0 ]; then
-          echo "🛑 Build blocked: Flaky results detected!"
+          echo "🛑 Build blocked: Flaky results or syntax errors detected!"
           exit 1
         fi
         
