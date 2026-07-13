@@ -47,7 +47,7 @@ def run_tests() -> None:
             judge_output = firewall.verify_with_ai(
                 case['patient_id'],
                 case['history'],
-                case[''],
+                case['condition'],
                 case['ai_response']
             )
 
