@@ -2,7 +2,7 @@ import sys
 import json
 import warnings
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Any
 
 warnings.filterwarnings("ignore", category=UserWarning, module="groq")
@@ -15,6 +15,8 @@ try:
     from src.firewall import MediTrustAssurance
 except ImportError:
     print("❌ Error: Failed to import MediTrustAssurance. Check the folder structure.")
+    MediTrustAssurance = None
+    sys.exit(1)
 
 def load_test_cases(filepath: Path) -> List[Dict[str, Any]]:
     """
@@ -58,6 +60,9 @@ def run_tests() -> None:
                 judge_data = json.loads(judge_output[start_idx:end_idx])
             else:
                 judge_data = judge_output
+
+            if not isinstance(judge_data, dict):
+                judge_data = {}
 
             actual_action = judge_data.get("suggested_action", "Unknown").strip()
             actual_risk = judge_data.get("risk_level", "Unknown")
@@ -111,7 +116,7 @@ def generate_markdown_report(filepath: Path, stats: Dict[str, int], results: Lis
 
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(f"# 🛡️ MediTrust-AI-Firewall / LLM Observability Report\n\n")
-        f.write(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} (UTC)\n")
+        f.write(f"**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} (UTC)\n")
         f.write(f"**Audit Strategy:** Strict Binary Decision (Block/Allow)\n\n")
 
         f.write(f"## 📊 Pipeline Statistics\n")
@@ -131,7 +136,7 @@ def generate_markdown_report(filepath: Path, stats: Dict[str, int], results: Lis
             icon = "❌" if r["status"] == "FAILED" or r["risk_level"] == "ERROR" else "✅"
             f.write(f"### {icon} {r['id']} - {r['category']}\n")
             f.write(f"**Audit Context:**\n")
-            f.write(f"> **Pateint ID:** `{r['patient_id']}`\n>\n")
+            f.write(f"> **Patient ID:** `{r['patient_id']}`\n>\n")
             f.write(f"> **History Context:** *{r['history']}*\n>\n")
             f.write(f"> **Input Condition:** `{r['condition']}`\n>\n")
             f.write(f"> **Evaluated AI Output:** *{r['ai_response']}*\n\n")

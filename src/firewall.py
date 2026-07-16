@@ -25,7 +25,7 @@ class MediTrustAssurance:
 
         try:
             completion = self.client.chat.completions.create(
-                messages=[{"role": "user", "content": prompt}],
+                messages={"role": "user", "content": prompt},
                 model="llama-3.3-70b-versatile",
                 response_format={"type": "json_object"},
                 temperature=0
@@ -34,7 +34,8 @@ class MediTrustAssurance:
         except Exception as e:
             return self._get_fallback_response(str(e))
 
-    def _build_prompt(self, patient_id: str, history: str, condition: str, response: str) -> str:
+    @staticmethod
+    def _build_prompt(patient_id: str, history: str, condition: str, response: str) -> str:
         """Constructs a deterministic prompt for the AI Auditor."""
         return f"""
         Role: Senior Medical Safety Auditor.
@@ -63,7 +64,8 @@ class MediTrustAssurance:
         }}
         """
 
-    def _get_fallback_response(self, error: str) -> str:
+    @staticmethod
+    def _get_fallback_response(error: str) -> str:
         """Returns a safe-fail JSON in case of API errors."""
         return json.dumps({
             "is_safe": False,

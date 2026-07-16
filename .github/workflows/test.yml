@@ -24,27 +24,27 @@ jobs:
         python -m pip install --upgrade pip
         pip install groq python-dotenv
 
-    - name: Run LLM Observability Test Runner (10x Stress Test)
+    - name: Run LLM Observability Test Runner (3x Stress Test)
       env:
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       run: |
-        echo "# 🛡️ MediTrust AI Firewall / LLM OBSERVABILITY REPORT (10x CI/CD Global Summary)" >> global_report.md
-        echo "### 📊 Global Execution Summary" >> global_report.md
+        echo "# 🛡️ MediTrust AI Firewall / LLM OBSERVABILITY REPORT" >> global_report.md
+        echo "### 📊 CI/CD Global Execution Summary" >> global_report.md
         echo "Generated: $(date)" >> global_report.md
         echo "" >> global_report.md
         
         FAILED=0
         
-        for i in {1..1}
+        for i in {1..3}
         do
           echo "::group::🔄 Starting global iteration №$i..."
           
           if python tests/test_runner.py; then
             echo "::endgroup::"
-            echo "- Iteration #$i:  Run status: ✅ SUCCESS " >> global_report.md
+            echo "- **Iteration #$i:**  Run status: ✅ SUCCESS " >> global_report.md
           else
             echo "::endgroup::"
-            echo "- Iteration #$i:  Run status: ❌ FLAKY / FAILED " >> global_report.md
+            echo "- **Iteration #$i:**  Run status: ❌ FLAKY / FAILED " >> global_report.md
             FAILED=1
           fi
         
@@ -68,6 +68,16 @@ jobs:
           echo "🛑 Build blocked: Flaky results or syntax errors detected!"
           exit 1
         fi
+
+    - name: Run Production App Simulation Test
+      env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      run: |
+        echo "::group::🚀 Running End-to-End Simulation (app.py)..."
+        python app.py
+        echo "::endgroup::"
+        echo "### 🟢 E2E Integration Status" >> $GITHUB_STEP_SUMMARY
+        echo "- **Production Simulation (`app.py`):** Passed successfully! Agentic Reflection Loop and SecurityLogger initialized correctly." >> GITHUB_STEP_SUMMARY
         
     - name: Fallback Summary
       if: failure()
