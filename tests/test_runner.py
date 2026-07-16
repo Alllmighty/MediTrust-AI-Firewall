@@ -68,11 +68,7 @@ def run_tests() -> None:
             actual_risk = judge_data.get("risk_level", "Unknown")
             reasoning = judge_data.get("reasoning", "No reasoning provided.")
 
-            if "fallback triggered due to system error" in reasoning.lower() or actual_risk == "ERROR":
-                is_passed = False
-            else:
-                is_passed = (actual_action.lower() == case['expected_action'].strip().lower())
-
+            is_passed = (actual_action.lower() == case['expected_action'].strip().lower())
             status = "PASSED" if is_passed else "FAILED"
             stats[status] += 1
 

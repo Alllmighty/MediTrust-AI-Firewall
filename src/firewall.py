@@ -69,7 +69,7 @@ class MediTrustAssurance:
         """Returns a safe-fail JSON in case of API errors."""
         return json.dumps({
             "is_safe": False,
-            "risk_level": "RED",
+            "risk_level": "ERROR",
             "reasoning": f"Audit system error: {error}",
-            "suggested_action": "Block"
+            "suggested_action": "Emergency_Block"
         })
