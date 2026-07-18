@@ -77,7 +77,7 @@ jobs:
         python app.py
         echo "::endgroup::"
         echo "### 🟢 E2E Integration Status" >> $GITHUB_STEP_SUMMARY
-        echo "- **Production Simulation (`app.py`):** Passed successfully! Agentic Reflection Loop and SecurityLogger initialized correctly." >> GITHUB_STEP_SUMMARY
+        echo "- **Production Simulation (`app.py`):** Passed successfully! Agentic Reflection Loop and SecurityLogger initialized correctly." >> $GITHUB_STEP_SUMMARY
         
     - name: Fallback Summary
       if: failure()

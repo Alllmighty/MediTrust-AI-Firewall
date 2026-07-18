@@ -25,12 +25,12 @@ class MediTrustAssurance:
 
         try:
             completion = self.client.chat.completions.create(
-                messages={"role": "user", "content": prompt},
+                messages={"role": "user", "content": prompt}, # type: ignore
                 model="llama-3.3-70b-versatile",
-                response_format={"type": "json_object"},
+                response_format={"type": "json_object"}, # type: ignore
                 temperature=0
             )
-            return completion.choices[0].message.content
+            return completion.choices[0].message.content # type: ignore
         except Exception as e:
             return self._get_fallback_response(str(e))
 
@@ -69,7 +69,7 @@ class MediTrustAssurance:
         """Returns a safe-fail JSON in case of API errors."""
         return json.dumps({
             "is_safe": False,
-            "risk_level": "ERROR",
-            "reasoning": f"Audit system error: {error}",
-            "suggested_action": "Emergency_Block"
+            "risk_level": "SYSTEM_ERROR",
+            "reasoning": f"API or Infrastructure failure: {error}",
+            "suggested_action": "System_Fallback_Block"
         })
