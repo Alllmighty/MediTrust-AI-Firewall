@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 from src.firewall import MediTrustAssurance
 from src.logger import SecurityLogger
@@ -28,7 +29,7 @@ def main() -> None:
         print(f"[CASE {i:02}] Patient: {patient_id} | Condition: '{condition}'")
         print(f"==================================================")
 
-        max_retries = 3
+        max_retries = 2
         attempt = 1
         current_response = initial_response
         is_fully_blocked = True
@@ -38,6 +39,9 @@ def main() -> None:
             print(f"[Attempt {attempt}/{max_retries}] Proposed AI Treatment: '{current_response}'")
 
             verdict_json = firewall.verify_with_ai(patient_id, history, condition, current_response)
+
+            print("⏳ Cooling down Rate Limits (12s)...")
+            time.sleep(12)
 
             try:
                 if isinstance(verdict_json, str):

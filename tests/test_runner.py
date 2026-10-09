@@ -1,6 +1,7 @@
 import sys
 import json
 import warnings
+import time
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import List, Dict, Any
@@ -52,6 +53,9 @@ def run_tests() -> None:
                 case['condition'],
                 case['ai_response']
             )
+
+            print("⏳ Cooling down Rate Limits (12s)...")
+            time.sleep(12)
 
             # Extracting JSON if wrapped in markdown or raw text
             if isinstance(judge_output, str):
@@ -115,7 +119,7 @@ def generate_markdown_report(filepath: Path, stats: Dict[str, int], results: Lis
     pass_rate = (stats["PASSED"] / stats["TOTAL"]) * 100 if stats["TOTAL"] > 0 else 0
 
     with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(f"# 🛡️ MediTrust-AI-Firewall / LLM Observability Report\n\n")
+        f.write(f"# 🛡️ MediTrust-AI-Firewall / LLM Observability Report (GPT OSS 120B)\n\n")
         f.write(f"**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} (UTC)\n")
         f.write(f"**Audit Strategy:** Strict Binary Decision (Block/Allow)\n\n")
 

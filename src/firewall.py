@@ -9,7 +9,7 @@ load_dotenv()
 class MediTrustAssurance:
     """
     Semantic AI Safety Layer.
-    Delegates medical response auditing to a high-order LLM (Llama-3.3-70b)
+    Delegates medical response auditing to a high-order Reasoning LLM (GPT OSS 120B)
     to ensure context-aware safety validation.
     """
 
@@ -18,19 +18,22 @@ class MediTrustAssurance:
         if not self.api_key:
             raise ValueError("API Key missing! Check your .env file.")
         self.client = Groq(api_key=self.api_key)
+        self.model_name: str = os.getenv("MEDITRUST_JUDGE_MODEL", "openai/gpt-oss-120b")
 
     def verify_with_ai(self, patient_id: str, history: str, condition: str, ai_response: str) -> str:
-        """Deep semantic audit via LLM-as-a-Judge (Llama-3.3-70b)."""
+        """Deep semantic audit via LLM-as-a-Judge (GPT OSS 120B)."""
         prompt = self._build_prompt(patient_id, history, condition, ai_response)
 
         try:
             completion = self.client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}], # type: ignore
-                model="llama-3.3-70b-versatile",
+                model=self.model_name,
                 response_format={"type": "json_object"}, # type: ignore
-                temperature=0
+                temperature=0,
+                extra_body={"reasoning_effort": "medium"}
             )
-            return completion.choices[0].message.content # type: ignore
+            content = completion.choices[0].message.content # type: ignore
+            return content if content is not None else self._get_fallback_response("Empty response from model")
         except Exception as e:
             return self._get_fallback_response(str(e))
 

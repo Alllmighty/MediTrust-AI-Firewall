@@ -1,26 +1,28 @@
 # MediTrust AI: Hybrid Medical Safety Firewall
 
-A sophisticated two-layer verification system designed to prevent AI-generated medical hallucinations and safety violations. It ensures that medical assistants do not prescribe contraindicated medications based on specific patient conditions (e.g., allergies or organ failure).
+A sophisticated two-layer verification system designed to prevent AI-generated medical hallucinations and safety violations. Features an advanced **Agentic Reflection Loop** that continuously challenges and self-corrects the primary AI until a safe, deterministic clinical response is generated.
 
-## 🧠 Philosophy
-Inspired by years of systemic data auditing, this tool addresses the critical issue of AI hallucinations in high-stakes environments.
+## 🧠 Philosophy: Zero-Error Clinical Mindset
+Inspired by years of systemic data auditing in high-stakes environments, this tool treats AI hallucinations not as software bugs, but as critical medical threats.
 
 **Real-world discovery:**
-During testing, the AI Judge successfully flagged **'500ml Saline'** for a renal failure patient as a risk for fluid overload—a medical nuance missed by standard keyword filters but captured by our **Semantic Layer**.
+During testing, the AI Judge successfully flagged **'500ml Saline'** for a renal failure patient as a risk for fluid overload—a nuance missed by standard filters but captured by our **Semantic Layer**.
 
-## 🏗️ Architecture: Pure Semantic Firewall
-Unlike traditional systems that rely on fragile "keyword lists" (Blacklists/Whitelists), MediTrust-AI-Firewall utilizes a **Pure Semantic Audit** approach:
+## 🏗️ Architecture: Pure Semantic Firewall & Agentic Loop
+Unlike systems relying on fragile "keyword lists", MediTrust utilizes a strict **Binary Decision Architecture** with Agentic Feedback:
 
-- **Zero-Trust Logic**: Every response is treated as potentially risky until verified by the LLM-as-a-Judge.
-- **Contextual Reasoning**: The system distinguishes between "prescribing" a drug (RED) and "warning" against it (GREEN).
-- **Deterministic Output**: Uses Llama-3.3-70b with `temperature: 0` to ensure consistent, JSON-formatted safety verdicts.
+- **Zero-Trust Logic**: Every response is treated as potentially risky until verified.
+- **Strict Binary Routing**: The AI Judge makes a definitive "Block" or "Allow" decision. (No "Alert Doctor" escape hatches).
+- **Agentic Reflection**: If blocked, the system feeds the reasoning back to the primary LLM to regenerate a medically safe response (up to 3 attempts).
+- **Deterministic Output**: Uses Llama-3.3-70b (`temperature: 0`) to ensure consistent, JSON-formatted safety verdicts.
 
 ## ⚙️ LLM Observability & CI/CD
 To ensure continuous safety, this project integrates a fully automated **LLM Observability Pipeline**:
 - **Automated Test Runner**: Validates the AI Judge against a strict baseline of medical edge cases, negations, and prompt injection (Jailbreak) attacks.
-- **Continuous Integration (GitHub Actions)**: Every push triggers a semantic regression test suite to guarantee zero degradation in safety logic.
-- **Automated Reporting**: Generates detailed markdown audit logs tracking AI reasoning and routing decisions.
+- **Continuous Integration (GitHub Actions)**: Every push triggers a semantic regression and E2E integration test suite to guarantee zero degradation in safety logic.
 
+
+- **Automated Reporting**: Generates detailed markdown audit logs tracking AI reasoning and routing decisions.
 ```mermaid
 graph TD
     A[AI Response] --> B[AI Judge: Llama 3.3 Audit]
@@ -35,11 +37,11 @@ graph TD
 - **Python 3.10+**
 - **AI/LLM:** Llama-3.3-70b-versatile (Groq API)
 - **DevOps/QA:** GitHub Actions (CI/CD), Automated Semantic Testing
-- **Security:** Dotenv for API key protection
+- **Security:** Dotenv API protection, Secure Logging
 
 ## 🚀 Getting Started
 1. Clone the repository.
-2. Install dependencies: pip install groq python-dotenv.
-3. Create a .env file with your GROQ_API_KEY.
-4. Run the production simulation: python app.py
-5. Run the CI/CD test suite locally: python tests/test_runner.py
+2. Install dependencies: `pip install groq python-dotenv`.
+3. Create a `.env` file with your `GROQ_API_KEY`.
+4. Run the Agentic production simulation: `python app.py`
+5. Run the CI/CD test suite locally: `python tests/test_runner.py`

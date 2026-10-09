@@ -11,7 +11,7 @@ class SecurityLogger:
         self.logger = logging.getLogger("MediTrust")
         if not self.logger.handlers:
             self.logger.setLevel(logging.INFO)
-            formatter = logging.Formatter('%(asctime)a | %(levelname)s | %(message)s')
+            formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
 
             file_handler = logging.FileHandler(log_dir / "security.log", encoding="utf-8")
             file_handler.setFormatter(formatter)

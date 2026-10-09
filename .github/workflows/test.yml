@@ -2,9 +2,9 @@ name: AI Firewall Security Audit
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "development" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "development" ]
 
 jobs:
   security-audit:
@@ -26,31 +26,31 @@ jobs:
 
     - name: Run LLM Observability Test Runner (3x Stress Test)
       env:
-        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        GROQ_API_KEY: \${{ secrets.GROQ_API_KEY }}
       run: |
         echo "# 🛡️ MediTrust AI Firewall / LLM OBSERVABILITY REPORT" >> global_report.md
         echo "### 📊 CI/CD Global Execution Summary" >> global_report.md
-        echo "Generated: $(date)" >> global_report.md
+        echo "Generated: \$(date)" >> global_report.md
         echo "" >> global_report.md
         
         FAILED=0
         
         for i in {1..3}
         do
-          echo "::group::🔄 Starting global iteration №$i..."
+          echo "::group::🔄 Starting global iteration №\$i..."
           
           if python tests/test_runner.py; then
             echo "::endgroup::"
-            echo "- **Iteration #$i:**  Run status: ✅ SUCCESS " >> global_report.md
+            echo "- **Iteration #\$i:**  Run status: ✅ SUCCESS " >> global_report.md
           else
             echo "::endgroup::"
-            echo "- **Iteration #$i:**  Run status: ❌ FLAKY / FAILED " >> global_report.md
+            echo "- **Iteration #\$i:**  Run status: ❌ FLAKY / FAILED " >> global_report.md
             FAILED=1
           fi
         
           if [ -f tests/test_report.md ]; then
             echo "" >> global_report.md
-            echo " <details><summary>🔍 Expand Iteration #$i details.</summary>" >> global_report.md
+            echo " <details><summary>🔍 Expand Iteration #\$i details.</summary>" >> global_report.md
             echo "" >> global_report.md
             sed 's/^/  /' tests/test_report.md >> global_report.md
             echo "" >> global_report.md
@@ -59,27 +59,30 @@ jobs:
             rm tests/test_report.md
           fi
         
-          sleep 2
+          if [ \$i -lt 3]; then
+            echo "⏳ Global cooling down between iterations (30s)..."
+            sleep 30
+          fi
         done
         
-        cat global_report.md >> $GITHUB_STEP_SUMMARY
+        cat global_report.md >> \$GITHUB_STEP_SUMMARY
         
-        if [ $FAILED -ne 0 ]; then
+        if [ \$FAILED -ne 0 ]; then
           echo "🛑 Build blocked: Flaky results or syntax errors detected!"
           exit 1
         fi
 
     - name: Run Production App Simulation Test
       env:
-        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        GROQ_API_KEY: \${{ secrets.GROQ_API_KEY }}
       run: |
         echo "::group::🚀 Running End-to-End Simulation (app.py)..."
         python app.py
         echo "::endgroup::"
-        echo "### 🟢 E2E Integration Status" >> $GITHUB_STEP_SUMMARY
-        echo "- **Production Simulation (`app.py`):** Passed successfully! Agentic Reflection Loop and SecurityLogger initialized correctly." >> $GITHUB_STEP_SUMMARY
+        echo "### 🟢 E2E Integration Status" >> \$GITHUB_STEP_SUMMARY
+        echo "- **Production Simulation (`app.py`):** Passed successfully! Agentic Reflection Loop and SecurityLogger initialized correctly." >> \$GITHUB_STEP_SUMMARY
         
     - name: Fallback Summary
       if: failure()
       run: |
-        echo "🚨 The pipeline was forcibly stopped due to test instability." >> $GITHUB_STEP_SUMMARY
+        echo "🚨 The pipeline was forcibly stopped due to test instability." >> \$GITHUB_STEP_SUMMARY
